@@ -12,6 +12,17 @@
     <meta property="og:title" content="Ptt Alertor - Ptt 即時文章通知，追蹤看板推文數、作者、關鍵字" />
     <meta property="og:description" content="訂閱看板推文數作者關鍵字，即時通知 Ptt 最新文章" />
 
+    <style>
+    code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        background-color: #f3f4f6; /* Tailwind 的 bg-gray-100 */
+        color: #1f2937;             /* Tailwind 的 text-gray-800 */
+        font-size: 0.875rem;        /* text-sm */
+        padding: 0.125rem 0.25rem;  /* py-0.5 px-1 */
+        border-radius: 0.25rem;     /* rounded */
+    }
+    </style>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css" integrity="sha512-Pmhg2i/F7+5+7SsdoUqKeH7UAZoVMYb1sxGOoJ0jWXAEHP0XV2H4CITyK267eHWp2jpj7rtqWNkmEOw1tNyYpg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     

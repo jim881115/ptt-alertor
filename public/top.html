@@ -3,147 +3,183 @@
 
 {{template "head" .}}
 
-<body>
-    <div class="container">
-        <div class="hidden-xs">
-            {{template "header"}}
-        </div>
-        <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active">
-                <a href="#keywords" aria-controls="keywords" role="tab" data-toggle="tab">關鍵字</a>
-            </li>
-            <li role="presentation">
-                <a href="#authors" aria-controls="authors" role="tab" data-toggle="tab">作者</a>
-            </li>
-            <li role="presentation">
-                <a href="#pushsum" aria-controls="pushsum" role="tab" data-toggle="tab">推噓文</a>
-            </li>
-        </ul>
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="keywords">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>板名</th>
-                            <th>關鍵字</th>
-                            <th>數量</th>
-                            <th>指令</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{range .Keywords}}
-                        <tr>
-                            <td>{{.Board}}</td>
-                            <td>{{.Word}}</td>
-                            <td>{{.Count}}</td>
-                            <td>
-                                <button type="button" class="copy btn btn-default btn-xs" data-toggle="tooltip">
-                                    <span class="glyphicon glyphicon-copy"></span>
-                                </button>
-                            </td>
-                        </tr>
-                        {{end}}
-                    </tbody>
-                </table>
-            </div>
-            <div role="tabpanel" class="tab-pane" id="authors">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>板名</th>
-                            <th>作者</th>
-                            <th>數量</th>
-                            <th>指令</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{range .Authors}}
-                        <tr>
-                            <td>{{.Board}}</td>
-                            <td>{{.Word}}</td>
-                            <td>{{.Count}}</td>
-                            <td>
-                                <button type="button" class="copy btn btn-default btn-xs" data-toggle="tooltip">
-                                    <span class="glyphicon glyphicon-copy"></span>
-                                </button>
-                            </td>
-                        </tr>
-                        {{end}}
-                    </tbody>
-                </table>
-            </div>
-            <div role="tabpanel" class="tab-pane" id="pushsum">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>板名</th>
-                            <th>推噓文</th>
-                            <th>數量</th>
-                            <th>指令</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{range .PushSum}}
-                        <tr>
-                            <td>{{.Board}}</td>
-                            <td>{{.Word}}</td>
-                            <td>{{.Count}}</td>
-                            <td>
-                                <button type="button" class="copy btn btn-default btn-xs" data-toggle="tooltip">
-                                    <span class="glyphicon glyphicon-copy"></span>
-                                </button>
-                            </td>
-                        </tr>
-                        {{end}}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        {{template "footer"}}
-    </div>
-    {{template "script"}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
-    <script>
-        $(function () {
-            var tab = "keywords"
-            var tabCommands = {
-                keywords: "新增",
-                authors: "新增作者",
-                pushsum: "新增推文數",
-                pushsumDown: "新增噓文數"
-            }
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                tab = e.target.getAttribute("aria-controls");
-            });
-            $('[data-toggle="tooltip"]').tooltip({
-                title: '已複製',
-                trigger: 'manual'
-            }).on('shown.bs.tooltip', function (e) {
-                setTimeout(function () {
-                    $(e.target).tooltip('hide');
-                }, 1000);
-            });
-            var clipboard = new Clipboard('.copy', {
-                text: function (trigger) {
-                    let boardElem = trigger.parentElement.parentElement.firstElementChild;
-                    let board = boardElem.textContent;
-                    let word = boardElem.nextElementSibling.textContent;
-                    let command = tabCommands[tab];
-                    if (tab === "pushsum" && parseInt(word) < 0) {
-                        command = tabCommands["pushsumDown"];
-                        word = Math.abs(word);
-                    }
-                    return command + " " + board + " " + word;
-                }
-            });
-            clipboard.on('success', function (e) {
-                $(e.trigger).tooltip('show');
-            });
-            clipboard.on('error', function (e) {
-                $(e.trigger).attr('title', '失敗！').tooltip('fixTitle').tooltip('show');
-            });
-        })
-    </script>
-</body>
+<body class="bg-gray-50 text-gray-800">
+  <div class="container mx-auto px-4 lg:px-0 max-w-4xl py-8">
+    {{template "header"}}
 
+    <!-- Tabs 頁籤區 -->
+    <div class="mt-8 border-b border-gray-200">
+      <nav class="flex space-x-8" aria-label="Tabs" id="main-tabs">
+        <button
+          class="tab-button pb-2 border-b-2 border-indigo-600 text-indigo-600 font-medium focus:outline-none"
+          data-target="tab-keywords">
+          關鍵字
+        </button>
+        <button
+          class="tab-button pb-2 border-b-2 border-transparent text-gray-600 hover:text-indigo-600 hover:border-indigo-600 font-medium focus:outline-none"
+          data-target="tab-authors">
+          作者
+        </button>
+        <button
+          class="tab-button pb-2 border-b-2 border-transparent text-gray-600 hover:text-indigo-600 hover:border-indigo-600 font-medium focus:outline-none"
+          data-target="tab-pushsum">
+          推噓文
+        </button>
+      </nav>
+    </div>
+
+    <!-- Tabs 內容 -->
+    <div class="mt-6">
+      <!-- 關鍵字 分頁 -->
+      <section id="tab-keywords" class="tab-content">
+        <div class="overflow-x-auto bg-white shadow rounded-lg">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">板名</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">關鍵字</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">數量</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              {{ range .Keywords }}
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ .Board }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ .Word }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ .Count }}</td>
+              </tr>
+              {{ end }}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 作者 分頁 -->
+      <section id="tab-authors" class="tab-content hidden">
+        <div class="overflow-x-auto bg-white shadow rounded-lg">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">板名</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">作者</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">數量</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              {{ range .Authors }}
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ .Board }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ .Word }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ .Count }}</td>
+              </tr>
+              {{ end }}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 推噓文 分頁 -->
+      <section id="tab-pushsum" class="tab-content hidden">
+        <div class="overflow-x-auto bg-white shadow rounded-lg">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">板名</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">推噓文</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">數量</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              {{ range .PushSum }}
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ .Board }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ .Word }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ .Count }}</td>
+              </tr>
+              {{ end }}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    {{template "footer"}}
+  </div>
+
+  <!-- Tab 切換邏輯 -->
+  <script>
+    document.querySelectorAll('#main-tabs .tab-button').forEach(button => {
+      button.addEventListener('click', () => {
+        // 先移除所有按鈕的激活樣式
+        document.querySelectorAll('#main-tabs .tab-button').forEach(btn => {
+          btn.classList.remove('text-indigo-600', 'border-indigo-600');
+          btn.classList.add('text-gray-600', 'hover:text-indigo-600', 'border-transparent');
+        });
+        // 隱藏所有 tab 內容
+        document.querySelectorAll('.tab-content').forEach(panel => {
+          panel.classList.add('hidden');
+        });
+        // 當前按鈕加上激活樣式
+        button.classList.remove('text-gray-600', 'hover:text-indigo-600', 'border-transparent');
+        button.classList.add('text-indigo-600', 'border-indigo-600');
+        // 顯示對應 tab 內容
+        document.getElementById(button.getAttribute('data-target')).classList.remove('hidden');
+      });
+    });
+    // 預設點擊第一個分頁
+    document.querySelector('#main-tabs .tab-button').click();
+  </script>
+
+  <!-- 複製用 Clipboard.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let currentTab = 'keywords';
+      const tabCommands = {
+        keywords: '新增',
+        authors: '新增作者',
+        pushsum: '新增推文數',
+        pushsumDown: '新增噓文數'
+      };
+      // 監聽 Tab 切換，更新 currentTab
+      document.querySelectorAll('#main-tabs .tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+          currentTab = button.getAttribute('data-target').replace('tab-', '');
+        });
+      });
+
+      const clipboard = new ClipboardJS('.copy-btn', {
+        text: function (trigger) {
+          // 找到該列的板名與關鍵字/作者/推噓文
+          const row = trigger.closest('tr');
+          const board = row.children[0].textContent.trim();
+          let word = row.children[1].textContent.trim();
+          let command = tabCommands[currentTab];
+          // 如果是 pushsum，但 word 是負數，使用 pushsumDown
+          if (currentTab === 'pushsum' && parseInt(word) < 0) {
+            command = tabCommands['pushsumDown'];
+            word = Math.abs(parseInt(word));
+          }
+          return `${command} ${board} ${word}`;
+        }
+      });
+
+      clipboard.on('success', function (e) {
+        // 顯示提示文字
+        const tooltip = document.createElement('span');
+        tooltip.className = 'absolute top-0 right-0 mt-1 mr-1 bg-gray-800 text-white text-xs px-2 py-1 rounded';
+        tooltip.textContent = '已複製';
+        e.trigger.parentElement.appendChild(tooltip);
+        setTimeout(() => tooltip.remove(), 1000);
+      });
+      clipboard.on('error', function (e) {
+        const tooltip = document.createElement('span');
+        tooltip.className = 'absolute top-0 right-0 mt-1 mr-1 bg-red-600 text-white text-xs px-2 py-1 rounded';
+        tooltip.textContent = '複製失敗';
+        e.trigger.parentElement.appendChild(tooltip);
+        setTimeout(() => tooltip.remove(), 1000);
+      });
+    });
+  </script>
+</body>
 </html>

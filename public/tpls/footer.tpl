@@ -1,7 +1,7 @@
 {{define "footer"}}
-<footer>
-    <p>如果喜歡 Ptt Alertor，可以捐些 P 幣給 ChoDino(原作者) 喔！
-    &copy; 2017 Ptt Alertor.
+<footer class="mt-16 py-8 text-center text-gray-500 text-sm">
+    <p>如果喜歡 Ptt Alertor，可以捐些 P 幣給 ChoDino(原作者) 喔！</p>
+    <div class="mt-4 space-x-4">
         <a class="fa-icon" target="_blank" href="https://facebook.com/pttalertor">
             <i class="fa fa-facebook-official fa-2x" aria-hidden="true"></i>
         </a>
@@ -11,17 +11,9 @@
         <a class="fa-icon" target="_blank" href="https://github.com/Ptt-Alertor/ptt-alertor">
             <i class="fa fa-github fa-2x" aria-hidden="true"></i>
         </a>
-        <a class="fa-icon" target="_top" href="mailto:dinos80152@gmail.com">
-            <i class="fa fa-envelope fa-2x" aria-hidden="true"></i>
-        </a>
-    </p>
-    <p>
-        此為伺服器擁有者 sating00 自架版本，僅留下我需要的 Line Notify 功能，若有安全有疑慮請立即停止使用，本人無法擔保此服務會永遠運作。 
-    </p>
-    <p>
-        Icons made by <a href="http://www.flaticon.com/authors/madebyoliver" title="Madebyoliver">Madebyoliver</a> from
-        <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/"
-            title="Creative Commons BY 3.0" target="_blank">CC BY 3.0</a>
+    </div>
+    <p class="mt-4">
+        © 2017 Ptt Alertor. Fork by sating00，若有安全有疑慮請立即停止使用，不保證此服務會長期維護或正常運作。 
     </p>
 </footer>
 {{end}}

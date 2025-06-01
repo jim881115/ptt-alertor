@@ -65,10 +65,8 @@ func main() {
 	router := newRouter()
 	m := messenger.New()
 
-	router.GET("/", ctrlr.Index)
-	// router.GET("/messenger", ctrlr.MessengerIndex)
-	router.GET("/line", ctrlr.LineIndex)
-	// router.GET("/telegram", ctrlr.TelegramIndex)
+	router.GET("/", ctrlr.HomeIndex)
+	router.GET("/telegram", ctrlr.TelegramIndex)
 	router.GET("/redirect/:checksum", ctrlr.Redirect)
 	router.GET("/top", ctrlr.Top)
 	router.GET("/docs", ctrlr.Docs)
