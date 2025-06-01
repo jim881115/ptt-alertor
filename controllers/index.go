@@ -25,7 +25,7 @@ var tpls = []string{
 	"public/top.html",
 	"public/telegram.html",
 	"public/messenger.html",
-	"public/line.html",
+	"public/home.html",
 	"public/tpls/head.tpl",
 	"public/tpls/header.tpl",
 	"public/tpls/slogan.tpl",
@@ -47,18 +47,13 @@ var (
 )
 
 // Index Handles router "/" request
-func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	LineIndex(w, r, nil)
-}
-
-// LineIndex Handles router "/line" request
-func LineIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	err := templates.ExecuteTemplate(w, "line.html", struct {
+func HomeIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	err := templates.ExecuteTemplate(w, "home.html", struct {
 		URI      string
 		WSHost   string
 		Count    []string
 		S3Domain string
-	}{"line", wsHost, count(), s3Domain})
+	}{"home", wsHost, count(), s3Domain})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
