@@ -6,51 +6,59 @@ import (
 	"net/http"
 	"os"
 	"regexp"
-
-	log "github.com/Ptt-Alertor/logrus"
-
 	"strconv"
 
+	log "github.com/Ptt-Alertor/logrus"
 	"github.com/Ptt-Alertor/ptt-alertor/command"
 	"github.com/Ptt-Alertor/ptt-alertor/myutil"
-	"github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/julienschmidt/httprouter"
 )
 
 var (
 	bot   *tgbotapi.BotAPI
-	err   error
 	token = os.Getenv("TELEGRAM_TOKEN")
-	host  = os.Getenv("APP_HOST")
 )
 
 func init() {
+	var err error
 	bot, err = tgbotapi.NewBotAPI(token)
 	if err != nil {
 		log.WithError(err).Fatal("Telegram Bot Initialize Failed")
 	}
-	// bot.Debug = true
+
 	log.Info("Telegram Authorized on " + bot.Self.UserName)
 
-	webhookConfig := tgbotapi.NewWebhook(host + "/telegram/" + token)
-	webhookConfig.MaxConnections = 100
-	_, err = bot.SetWebhook(webhookConfig)
+	_, err = bot.RemoveWebhook()
 	if err != nil {
-		log.WithError(err).Fatal("Telegram Bot Set Webhook Failed")
+		log.WithError(err).Fatal("Telegram Remove Webhook Failed")
 	}
-	log.Info("Telegram Bot Sets Webhook Success")
+
+	go func() {
+		u := tgbotapi.NewUpdate(0)
+		u.Timeout = 60
+
+		updates, _ := bot.GetUpdatesChan(u)
+
+		for update := range updates {
+			HandleUpdate(update)
+		}
+	}()
 }
 
-// HandleRequest handles request from webhook
 func HandleRequest(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	bytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.WithError(err).Error("Telegram Read Request Body Failed")
+		return
 	}
 
 	var update tgbotapi.Update
 	json.Unmarshal(bytes, &update)
+	HandleUpdate(update)
+}
 
+func HandleUpdate(update tgbotapi.Update) {
 	if update.CallbackQuery != nil {
 		handleCallbackQuery(update)
 		return
